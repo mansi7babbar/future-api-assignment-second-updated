@@ -11,3 +11,5 @@ libraryDependencies += "org.apache.commons" % "commons-io" % "1.3.2"
 libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.5.11"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.1.0" % Test
+
+libraryDependencies += "org.scalamock" %% "scalamock" % "4.4.0" % Test
