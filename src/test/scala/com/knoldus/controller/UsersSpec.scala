@@ -3,33 +3,31 @@ package com.knoldus.controller
 import com.knoldus.{Address, Company, Geo, User}
 import net.liftweb.json.DefaultFormats
 import net.liftweb.json.Serialization.write
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.funsuite.AnyFunSuite
-import scala.concurrent.ExecutionContext.Implicits.global
+import org.mockito.MockitoSugar
+import org.scalatest.flatspec.AsyncFlatSpec
+
 import scala.concurrent.Future
 
-class UsersSpec extends AnyFunSuite with MockFactory {
+class UsersSpec extends AsyncFlatSpec with MockitoSugar {
   implicit val formats: DefaultFormats.type = DefaultFormats
 
   val mockJsonData: JsonData = mock[JsonData]
 
-  val users: User = User(1, "Leanne Graham", "Bret", "Sincere@april.biz",
+  val listOfUsers: List[User] = List(User(1, "Leanne Graham", "Bret", "Sincere@april.biz",
     Address("Kulas Light", "Apt. 556", "Gwenborough", "92998-3874",
       Geo("-37.3159", "81.1496")), "1-770-736-8031 x56442", "hildegard.org",
-    Company("Romaguera-Crona", "Multi-layered client-server neural-net", "harness real-time e-markets"))
-  val usersJson: String = write(users)
+    Company("Romaguera-Crona", "Multi-layered client-server neural-net", "harness real-time e-markets")))
+  val usersJson: String = write(listOfUsers)
 
-  (mockJsonData getDetails _).expects("https://jsonplaceholder.typicode.com/users")
-    .returning(Future.successful(usersJson)).once()
+  when(mockJsonData getDetails "https://jsonplaceholder.typicode.com/users")
+    .thenReturn(Future.successful(usersJson))
 
   val userModel = new Users(mockJsonData)
 
-  test("listOfUsers")  {
-    userModel.listOfUsers.map(users => assert(users ==
-      List(User(1, "Leanne Graham", "Bret", "Sincere@april.biz",
-        Address("Kulas Light", "Apt. 556", "Gwenborough", "92998-3874",
-          Geo("-37.3159", "81.1496")), "1-770-736-8031 x56442", "hildegard.org",
-        Company("Romaguera-Crona", "Multi-layered client-server neural-net", "harness real-time e-markets")))))
+  "listOfUsers" should "give list of users" in {
+    userModel.listOfUsers.map(users => assert(users == List(User(1, "Leanne Graham", "Bret", "Sincere@april.biz",
+      Address("Kulas Light", "Apt. 556", "Gwenborough", "92998-3874",
+        Geo("-37.3159", "81.1496")), "1-770-736-8031 x56442", "hildegard.org",
+      Company("Romaguera-Crona", "Multi-layered client-server neural-net", "harness real-time e-markets")))))
   }
-
 }
